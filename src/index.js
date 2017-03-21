@@ -84,28 +84,22 @@ function dfs (state = initialState, pastStates = new Set()) {
 function bfs (stack = [{ state: initialState, path: [initialState] }],
               past = new Set([initialState])) {
     while (true) {
-        if (++iter % 1000 === 0) process.stdout.write(`\r${ iter }`);
         let currentState = stack.shift(),
             vars = getNextStates(currentState.state).filter(s => !past.has(s) && past.add(s))
                 .map(s => ({ state: s, path: currentState.path.concat(s) })),
             final = vars.filter(s => s.state === finalState)[0];
+        if (++iter % 1000 === 0)
+            process.stdout.write(`\r${ iter } deeping level ${ currentState.path.length }`);
         if (final) return final.path;
         stack.push(...vars);
     }
 }
 
 (() => {
+    let result;
     console.log(`--- Hanoi Tower Solution ---`);
     console.log(`Tower height: ${ TOWER_HEIGHT }`);
     console.log(`Number of rods: ${ RODS }`);
-    console.log(`Solving (DFS algorithm), please wait...`);
-    let result = dfs();
-    console.log(`\rDone, number of iterations: ${ iter }.`);
-    console.log(
-        result.length
-            ? `One possible solution found (${ result.length } steps): ${ result.join(" => ") }`
-            : `No solutions for this input!`
-    );
     console.log(`Solving (BFS algorithm), please wait...`);
     iter = 0;
     result = bfs();
@@ -115,4 +109,14 @@ function bfs (stack = [{ state: initialState, path: [initialState] }],
             ? `First possible solution found (${ result.length } steps): ${ result.join(" => ") }`
             : `No solutions for this input!`
     );
+    console.log(`Solving (DFS algorithm), please wait...`);
+    iter = 0;
+    result = dfs();
+    console.log(`\rDone, number of iterations: ${ iter }.`);
+    console.log(
+        result.length
+            ? `One possible solution found (${ result.length } steps): ${ result.join(" => ") }`
+            : `No solutions for this input!`
+    );
+
 })();
