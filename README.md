@@ -14,8 +14,9 @@ node index.js
 Methods and Features 
 --------------------
 
-+ Configurable helper disks number limit.
++ Configurable number of rods.
 + Deep First Search (DFS).
++ Breadth First Search (BFS).
 + ...to be done!
 
 Find more comments inside the [code](index.js).
@@ -26,9 +27,13 @@ Sample Output
 ```
 --- Hanoi Tower Solution ---
 Tower height: 3
-Max extra discs can be used: 2
+Number of rods: 4
 Solving (DFS algorithm), please wait...
-Done, passed 3 possible states.
-One possible solution found (15 steps): ABC-- => AB-C- => A-C-B => AC--B => A--BC =>
--A-BC => C-A-B => -AC-B => B-AC- => BC-A- => BC--A => B-C-A => -C-AB => C--AB => --ABC
+Done, number of iterations: 16.
+One possible solution found (17 steps): ABC--- => AB-C-- => A-C-B- => -C-B-A => C--B-A => --BC-A 
+=> --B-AC => B---AC => -B--AC => C-B--A => -BC--A => -B-C-A => B--C-A => --C-AB => C---AB 
+=> -C--AB => ---ABC
+Solving (BFS algorithm), please wait...
+Done, number of iterations: 27.
+First possible solution found (6 steps): ABC--- => AB-C-- => A-C-B- => -C-B-A => -C--AB => ---ABC
 ```
