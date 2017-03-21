@@ -40,7 +40,7 @@ function getNextStates (state) {
     for (let posA = 0; posA < topRings.length; ++posA) {
         if (!topRings[posA]) continue;                 // skip undefined's as we can't move them
         for (let posB = 0; posB < topRings.length; ++posB) {
-            if (!(topRings[posA] <= topRings[posB]))    // try posA -> posB
+            if (!(topRings[posA] <= topRings[posB]))   // try posA -> posB
                 variants.push(towers.map(
                     (tower, pos) =>
                         pos === posA ? tower.slice(0, tower.length - 1) // take one from top

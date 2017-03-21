@@ -19,7 +19,7 @@ Methods and Features
 + Breadth First Search (BFS).
 + ...to be done!
 
-Find more comments inside the [code](index.js).
+Find more comments inside the [code](src/index.js).
 
 Sample Output
 -------------
