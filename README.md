@@ -17,6 +17,7 @@ Methods and Features
 + Configurable number of rods.
 + Deep First Search (DFS).
 + Breadth First Search (BFS).
++ Iterative deepening depth-first search.
 + ...to be done!
 
 Find more comments inside the [code](src/index.js).

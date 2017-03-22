@@ -1,24 +1,25 @@
-//      Hanoi Tower Solution Search on JavaScript by ZitRo [zitros.tk]      \\
-//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-//                      --- CONSTANTS EXAMPLES ---                          \\
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+//                 Hanoi Tower Solution Search on JavaScript by ZitRo [zitros.tk]                 \\
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+//                                   --- CONSTANTS EXAMPLES ---                                   \\
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 // const TOWER_HEIGHT = 4,          // const TOWER_HEIGHT = 5,              \\ State example:     \\
-//       MAX_EXTRA_DISKS = 2;       //       MAX_EXTRA_DISKS = 3;           \\ stored as          \\
+//       RODS = 3;                  //       RODS = 3;                      \\ stored as          \\
 //                                  //                                      \\ "AC-B-"            \\
-// (stored as "ABCD--")             //    5 (stored as "ABCDE--")      5    \\                    \\
-//         4                   4    //    ¯¯EE                      ||¯¯    \\                    \\
-//      DD¯¯                ||¯¯    //     DDDD            3        ||      \\                    \\
-//     CCCC          2      ||      //    CCCCCC        ||¯¯        ||      \\   ||          ||   \\
-//    BBBBBB      ||¯¯      ||      //   BBBBBBBB       ||          ||      \\   CC    ||    ||   \\
+//                                  // (stored as "ABCDE--")                \\                    \\
+// (stored as "ABCD--")             //      EE          ||          ||      \\                    \\
+//      DD        ||        ||      //     DDDD         ||          ||      \\                    \\
+//     CCCC       ||        ||      //    CCCCCC        ||          ||      \\   ||    ||    ||   \\
+//    BBBBBB      ||        ||      //   BBBBBBBB       ||          ||      \\   CC    ||    ||   \\
 //   AAAAAAAA     ||        ||      //  AAAAAAAAAA      ||          ||      \\ AAAAAA BBBB   ||   \\
 ////////////////////////////////////////////////////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\
 
 const TOWER_HEIGHT = 3,
       RODS = 4;
 
-//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-//                        ---  PROGRAM CODE  ---                            \\
-//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+//                                     ---  PROGRAM CODE  ---                                     \\
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 const pyramid =
           Array.from({ length: TOWER_HEIGHT }, (a, i) => String.fromCharCode(65 + i)).join(""),
@@ -58,17 +59,20 @@ let iter = 0;
  * Solves the hanoi tower puzzle with deep-first search (DFS).
  * @param {string} state
  * @param {Set} pastStates
+ * @param {number=Infinity} deepLimit
  * @returns {string[]} - Variants array if found
  */
-function dfs (state = initialState, pastStates = new Set()) {
+function dfs (state = initialState, pastStates = new Set(), deepLimit = Infinity) {
+    if (pastStates.size > deepLimit)
+        return [];
     if (state === finalState)
         return [finalState];
     let vars = getNextStates(state);
-    if (++iter % 1000 === 0) process.stdout.write(`\r${ iter }`);
+    if (++iter % 1000 === 0) process.stdout.write(`\r${ pastStates.size }`);
     for (let currentState of vars) {
         if (pastStates.has(currentState))
             continue;
-        let result = dfs(currentState, (new Set(pastStates)).add(currentState));
+        let result = dfs(currentState, (new Set(pastStates)).add(currentState), deepLimit);
         if (result.length)
             return [state].concat(result);
     }
@@ -84,14 +88,29 @@ function dfs (state = initialState, pastStates = new Set()) {
 function bfs (stack = [{ state: initialState, path: [initialState] }],
               past = new Set([initialState])) {
     while (true) {
+        if (stack.length === 0) return [];
         let currentState = stack.shift(),
             vars = getNextStates(currentState.state).filter(s => !past.has(s) && past.add(s))
                 .map(s => ({ state: s, path: currentState.path.concat(s) })),
             final = vars.filter(s => s.state === finalState)[0];
         if (++iter % 1000 === 0)
-            process.stdout.write(`\r${ iter } deeping level ${ currentState.path.length }`);
+            process.stdout.write(`\r${ iter } deepening level ${ currentState.path.length }`);
         if (final) return final.path;
         stack.push(...vars);
+    }
+}
+
+/**
+ * Solves the hanoi tower puzzle using iterative deepening depth-first search.
+ * @param {string} state
+ * @param {Set} pastStates
+ * @param {number=3} initialDeepening
+ * @returns {string[]} - Variants array if found
+ */
+function idDfs (state = initialState, pastStates = new Set(), initialDeepening = 3) {
+    while (true) {
+        let variant = dfs(state, pastStates, initialDeepening++);
+        if (variant.length) return variant;
     }
 }
 
@@ -109,14 +128,22 @@ function bfs (stack = [{ state: initialState, path: [initialState] }],
             ? `First possible solution found (${ result.length } steps): ${ result.join(" => ") }`
             : `No solutions for this input!`
     );
-    console.log(`Solving (DFS algorithm), please wait...`);
+    console.log(`Solving (DFSI algorithm), please wait...`);
     iter = 0;
-    result = dfs();
-    console.log(`\rDone, number of iterations: ${ iter }.`);
+    result = idDfs();
+    console.log(`\rDone, the number of iterations is ${ iter }.`);
     console.log(
         result.length
             ? `One possible solution found (${ result.length } steps): ${ result.join(" => ") }`
             : `No solutions for this input!`
     );
-
+    console.log(`Solving (DFS algorithm), please wait...`);
+    iter = 0;
+    result = dfs();
+    console.log(`\rDone, the number of iterations is ${ iter }.`);
+    console.log(
+        result.length
+            ? `One possible solution found (${ result.length } steps): ${ result.join(" => ") }`
+            : `No solutions for this input!`
+    );
 })();
