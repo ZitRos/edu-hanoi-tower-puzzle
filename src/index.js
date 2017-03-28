@@ -101,6 +101,45 @@ function bfs (stack = [{ state: initialState, path: [initialState] }],
 }
 
 /**
+ * Returns state's weight. Used in A* algorithm. Here we just assume that the best variant is that
+ * one, when we have the most elements placed on the right.
+ * @param state
+ * @return {number} - A value between 0 and 1, where 0 identifies the best value.
+ */
+function stateWeight (state) {
+    let arrs = state.split("-");
+    return arrs.reduce((acc, e, i) => acc + e.length * (arrs.length - 1 - i), 0)
+        / arrs.reduce((acc, e, i) => acc + e.length * 3, 0);
+}
+
+/**
+ * Solves the hanoi tower puzzle with breadth-first search (BFS).
+ * @param {string[]} stack
+ * @param {Set} past
+ * @returns {string[]} - Variants array if found
+ */
+function aStar (stack = [{ state: initialState, weight: stateWeight(initialState), path: [initialState] }],
+                past = new Set([initialState])) {
+    while (true) {
+        if (stack.length === 0) return [];
+        let currentState = stack.reduce((b, v) =>
+                (v.weight + v.path.length + v.path.reduce((acc, s) => acc + stateWeight(s), 0)
+                 < b.weight + b.path.length + b.path.reduce((acc, s) => acc + stateWeight(s), 0))
+                    ? v
+                    : b
+            , stack[0]),
+            vars = getNextStates(currentState.state).filter(s => !past.has(s) && past.add(s))
+                .map(s => ({ state: s, weight: stateWeight(s), path: currentState.path.concat(s)})),
+            final = vars.filter(s => s.state === finalState)[0];
+        stack = stack.filter(s => s !== currentState);
+        if (++iter % 1000 === 0)
+            process.stdout.write(`\r${ iter } deepening level ${ currentState.path.length }`);
+        if (final) return final.path;
+        stack.push(...vars);
+    }
+}
+
+/**
  * Solves the hanoi tower puzzle using iterative deepening depth-first search.
  * @param {string} state
  * @param {Set} pastStates
@@ -131,6 +170,15 @@ function idDfs (state = initialState, pastStates = new Set(), initialDeepening =
     console.log(`Solving (DFSI algorithm), please wait...`);
     iter = 0;
     result = idDfs();
+    console.log(`\rDone, the number of iterations is ${ iter }.`);
+    console.log(
+        result.length
+            ? `One possible solution found (${ result.length } steps): ${ result.join(" => ") }`
+            : `No solutions for this input!`
+    );
+    console.log(`Solving (A* algorithm), please wait...`);
+    iter = 0;
+    result = aStar();
     console.log(`\rDone, the number of iterations is ${ iter }.`);
     console.log(
         result.length

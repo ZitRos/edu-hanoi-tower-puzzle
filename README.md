@@ -1,6 +1,6 @@
 # Hanoi Tower Puzzle
 
-A JavaScript solution for Hanoi tower puzzle.
+A JavaScript solution for Hanoi tower puzzle using different search algorithms.
 
 How to Run
 ----------
@@ -18,7 +18,7 @@ Methods and Features
 + Deep First Search (DFS).
 + Breadth First Search (BFS).
 + Iterative deepening depth-first search.
-+ ...to be done!
++ A* algorithm.
 
 Find more comments inside the [code](src/index.js).
 
