@@ -113,7 +113,7 @@ function stateWeight (state) {
 }
 
 /**
- * Solves the hanoi tower puzzle with breadth-first search (BFS).
+ * Solves the hanoi tower puzzle with A* algorithm.
  * @param {string[]} stack
  * @param {Set} past
  * @returns {string[]} - Variants array if found
